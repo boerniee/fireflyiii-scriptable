@@ -111,19 +111,27 @@ async function createWidget() {
 
     dataWidget.addSpacer(12);
     
-    let invoices = "🧾 0 €";
-    if(BILLS_PAID_KEY in balance) {
-      invoices = "🧾 " + balance[BILLS_PAID_KEY].value_parsed;
-    }
-    if (BILLS_UNPAID_KEY in balance) {
-      invoices += " | " + balance[BILLS_UNPAID_KEY].value_parsed;
-    } else {
-      invoices += " | 0 €";
-    }
     let invoiceRow = dataWidget.addStack();
-    let invoiceText = invoiceRow.addText(invoices); 
-    invoiceText.font = Font.regularSystemFont(12);
-     
+    let invoiceIcon = invoiceRow.addText("🧾");
+    invoiceIcon.font = Font.regularSystemFont(12);
+    let invoicesPaid;
+    if(BILLS_PAID_KEY in balance) {
+      invoicesPaid = invoiceRow.addText(balance[BILLS_PAID_KEY].value_parsed);
+    } else {
+      invoicesPaid = invoiceRow.addText("- €");
+    }
+    invoicesPaid.font = Font.regularSystemFont(12);
+    invoicesPaid.textColor = new Color("16b82c", .5);
+    let invoiceSeparator = invoiceRow.addText(" | ");
+    invoiceSeparator.font = Font.regularSystemFont(12);
+    let invoicesUnpaid;
+    if (BILLS_UNPAID_KEY in balance) {
+      invoicesPaid = invoiceRow.addText(balance[BILLS_UNPAID_KEY].value_parsed);
+    } else {
+      invoicesPaid = invoiceRow.addText("- €");
+    }
+    invoicesPaid.font = Font.regularSystemFont(12);
+    invoicesPaid.textColor = new Color("d60000", .5)
     let worthText = dataWidget.addStack().addText("🏦 " + (NET_WORTH_KEY in balance ? balance[NET_WORTH_KEY].value_parsed : "- €"));
     worthText.font = Font.regularSystemFont(12);
     
