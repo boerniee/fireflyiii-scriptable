@@ -16,6 +16,7 @@ The widget shows the following things:
 - how much money you have spent and earned this month
 - the amount of paid and unpaid invoices
 - your net worth
+- configure dark/bright theme or use system default (see line 5)
 
 ### Planned Features
 - Medium sized widget

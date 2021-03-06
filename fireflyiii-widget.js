@@ -2,6 +2,7 @@ const token = "paste token here"
 const host = "paste host here"
 const currency = "EUR"
 const chartColor = "16b82c"
+let theme = null; // set to 'bright' or 'dark', defaults to system setting if null
 
 class LineChart {
   // LineChart by https://kevinkub.de/
@@ -67,6 +68,17 @@ const SPENT_IN_KEY = "spent-in-" + currency;
 
 // const versionUrl = "https://version.firefly-iii.org/index.json"
 let widget = new ListWidget();
+if (theme === null) {
+  theme = (await Device.isUsingDarkAppearance() ? "dark" : "bright");
+}
+let textColor = Color.black();
+let bgColor = Color.white();
+
+if (theme === "dark") {
+  textColor = Color.white();
+  bgColor = Color.black();
+}
+
 await createWidget();
 
 if (!config.runsInWidget) {
@@ -79,6 +91,7 @@ Script.complete();
 
 async function createWidget() {
     widget.setPadding(0,0,0,0);
+    widget.backgroundColor = bgColor;
     
     let balance = await fetchBalance();
     let about = await fetchAbout();
@@ -92,15 +105,18 @@ async function createWidget() {
     let headerStack = dataWidget.addStack();
     let header = headerStack.addText("💵 Firefly III");
     header.font = Font.regularSystemFont(12);
+    header.textColor = textColor;
     header.minimumScaleFactor = 0.50;
     headerStack.layoutHorizontally();
     headerStack.addSpacer();
     let versionText = headerStack.addText("v" + about["data"]["version"]);
     versionText.font = Font.regularSystemFont(8);
+    versionText.color = textColor;
     
     let balanceRow = dataWidget.addStack();
     let balanceText = balanceRow.addText((BALANCE_KEY in balance ? balance[BALANCE_KEY].value_parsed : "- €"));
     balanceText.font = Font.semiboldSystemFont(18);
+    balanceText.textColor = textColor;
   
     let spentRow = dataWidget.addStack();
     let spentText = spentRow.addText("+" +
@@ -108,11 +124,13 @@ async function createWidget() {
         " | " +
         (SPENT_IN_KEY in balance ? balance[SPENT_IN_KEY].value_parsed : "/"));
     spentText.font = Font.mediumRoundedSystemFont(10);
+    spentText.textColor = textColor;
 
     dataWidget.addSpacer(12);
     
     let invoiceRow = dataWidget.addStack();
     let invoiceIcon = invoiceRow.addText("🧾");
+    invoiceIcon.textColor = textColor;  
     invoiceIcon.font = Font.regularSystemFont(12);
     let invoicesPaid;
     if(BILLS_PAID_KEY in balance) {
@@ -124,6 +142,7 @@ async function createWidget() {
     invoicesPaid.textColor = new Color("16b82c", .5);
     let invoiceSeparator = invoiceRow.addText(" | ");
     invoiceSeparator.font = Font.regularSystemFont(12);
+    invoiceSeparator.textColor = textColor;
     let invoicesUnpaid;
     if (BILLS_UNPAID_KEY in balance) {
       invoicesPaid = invoiceRow.addText(balance[BILLS_UNPAID_KEY].value_parsed);
@@ -131,9 +150,10 @@ async function createWidget() {
       invoicesPaid = invoiceRow.addText("- €");
     }
     invoicesPaid.font = Font.regularSystemFont(12);
-    invoicesPaid.textColor = new Color("d60000", .5)
+    invoicesPaid.textColor = new Color("ff0000", .5)
     let worthText = dataWidget.addStack().addText("🏦 " + (NET_WORTH_KEY in balance ? balance[NET_WORTH_KEY].value_parsed : "- €"));
     worthText.font = Font.regularSystemFont(12);
+    worthText.textColor = textColor;
     
     dataWidget.addSpacer();
     
